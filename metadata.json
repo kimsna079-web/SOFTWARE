@@ -1,0 +1,6 @@
+{
+  "name": "PRO•SAN",
+  "description": "PRO•SAN — Professional Facebook automation software for account registration, profile building, page creation, and multi-window proxy automation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
