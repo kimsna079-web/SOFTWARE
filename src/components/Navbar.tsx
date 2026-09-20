@@ -62,6 +62,15 @@ export const Navbar: React.FC = () => {
               Dashboard
             </button>
             <button 
+              onClick={() => scrollTo('preview')} 
+              className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-[#2563eb] transition-colors rounded-lg hover:bg-slate-100/60 flex items-center gap-1.5"
+            >
+              <span>Scheduler</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-[#2563eb] border border-blue-200">
+                Human-Delay
+              </span>
+            </button>
+            <button 
               onClick={() => scrollTo('task-history')} 
               className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-[#2563eb] transition-colors rounded-lg hover:bg-slate-100/60 flex items-center gap-1.5"
             >
@@ -142,6 +151,15 @@ export const Navbar: React.FC = () => {
             className="w-full text-left px-3 py-2.5 text-sm font-semibold text-slate-700 hover:text-[#2563eb] hover:bg-slate-50 rounded-lg"
           >
             Live Dashboard Preview
+          </button>
+          <button 
+            onClick={() => scrollTo('preview')}
+            className="w-full text-left px-3 py-2.5 text-sm font-semibold text-slate-700 hover:text-[#2563eb] hover:bg-slate-50 rounded-lg flex items-center justify-between"
+          >
+            <span>Batch Queue &amp; Scheduler</span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+              Human-Timing
+            </span>
           </button>
           <button 
             onClick={() => scrollTo('task-history')}
