@@ -18,8 +18,14 @@ import {
   ArrowUpRight,
   Clock,
   Wifi,
-  ChevronRight
+  ChevronRight,
+  Settings2,
+  Sliders,
+  Eye,
+  Key,
+  X
 } from 'lucide-react';
+import { AccountInspectorModal, InspectedAccount } from './AccountInspectorModal';
 
 interface AutomationTaskProgress {
   id: string;
@@ -116,6 +122,57 @@ const INITIAL_TASKS: AutomationTaskProgress[] = [
   }
 ];
 
+const SAMPLE_ACCOUNTS: InspectedAccount[] = [
+  {
+    id: 101,
+    name: 'David Miller',
+    email: 'david.m_91@gmail.com',
+    phone: '+1 (202) 555-0143',
+    pass: 'ProSanSecure#2026',
+    totpSecret: 'JBSWY3DPEHPK3PXP',
+    status: 'LIVE_VERIFIED',
+    proxyIp: '185.220.101.42 (US)',
+    createdAt: 'Just now',
+    fbUid: '1000982319401'
+  },
+  {
+    id: 102,
+    name: 'Sarah Jenkins',
+    email: 'sarah.j_agency@outlook.com',
+    phone: '+1 (202) 555-0178',
+    pass: 'ProSanSecure#2026',
+    totpSecret: 'KZXW65TBNRSXG5DS',
+    status: 'LIVE_VERIFIED',
+    proxyIp: '194.26.29.110 (UK)',
+    createdAt: '2 mins ago',
+    fbUid: '1000982420912'
+  },
+  {
+    id: 103,
+    name: 'Mark Taylor',
+    email: 'mark.t_growth@yahoo.com',
+    phone: '+1 (202) 555-0199',
+    pass: 'ProSanSecure#2026',
+    totpSecret: 'OBXXK43VMVZXIZLN',
+    status: 'PROFILE_HYDRATED',
+    proxyIp: '91.202.233.15 (DE)',
+    createdAt: '5 mins ago',
+    fbUid: '1000982531023'
+  },
+  {
+    id: 104,
+    name: 'Elena Rostova',
+    email: 'elena.r_media@gmail.com',
+    phone: '+44 7700 900142',
+    pass: 'ProSanSecure#2026',
+    totpSecret: 'W4N2M3L1K5J6H7G8',
+    status: 'WARMUP_COMPLETED',
+    proxyIp: '142.112.88.74 (CA)',
+    createdAt: '8 mins ago',
+    fbUid: '1000982642134'
+  }
+];
+
 export const DashboardPreview: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'screenshots' | 'simulator'>('simulator');
   const [isSimulating, setIsSimulating] = useState(true);
@@ -129,6 +186,10 @@ export const DashboardPreview: React.FC = () => {
   const [createdCount, setCreatedCount] = useState(14);
   const [activeThreads, setActiveThreads] = useState(4);
   const [tasks, setTasks] = useState<AutomationTaskProgress[]>(INITIAL_TASKS);
+  const [inspectedAccount, setInspectedAccount] = useState<InspectedAccount | null>(null);
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
+  const [proxyRegion, setProxyRegion] = useState<string>('US Residential (AT&T)');
+  const [typingVelocity, setTypingVelocity] = useState<string>('Humanized (120-250ms)');
 
   // Dynamic progress bar updates
   useEffect(() => {
@@ -293,6 +354,15 @@ export const DashboardPreview: React.FC = () => {
                 <span className="text-xs text-slate-400 font-mono hidden sm:inline">
                   Engine: {isSimulating ? <span className="text-emerald-400 font-bold">RUNNING</span> : <span className="text-amber-400 font-bold">PAUSED</span>}
                 </span>
+
+                <button
+                  onClick={() => setShowSettingsModal(true)}
+                  className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center gap-1.5 transition-all border border-slate-700"
+                  title="Configure Automation Engine"
+                >
+                  <Sliders className="w-3 h-3 text-sky-400" />
+                  <span className="hidden sm:inline">Config</span>
+                </button>
 
                 <button
                   onClick={() => setIsSimulating(!isSimulating)}
@@ -598,35 +668,34 @@ export const DashboardPreview: React.FC = () => {
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-white">David Miller (Verified)</div>
-                      <div className="text-[11px] text-slate-400 font-mono">david.m_91@gmail.com</div>
+                  {SAMPLE_ACCOUNTS.map((acc) => (
+                    <div 
+                      key={acc.id}
+                      onClick={() => setInspectedAccount(acc)}
+                      className="p-2.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-sky-500/50 flex items-center justify-between cursor-pointer transition-all group"
+                    >
+                      <div className="truncate pr-2">
+                        <div className="font-bold text-white flex items-center gap-1.5">
+                          <span>{acc.name}</span>
+                          <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">({acc.proxyIp})</span>
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-mono truncate">{acc.email}</div>
+                      </div>
+                      
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border font-mono ${
+                          acc.status === 'LIVE_VERIFIED'
+                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                            : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                        }`}>
+                          {acc.status === 'LIVE_VERIFIED' ? 'LIVE 2FA' : 'PROFILE OK'}
+                        </span>
+                        <span className="p-1 rounded bg-slate-700/70 text-slate-300 group-hover:text-white group-hover:bg-blue-600 transition-colors" title="Inspect Account Credentials &amp; 2FA">
+                          <Eye className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      LIVE OTP
-                    </span>
-                  </div>
-
-                  <div className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-white">Sarah Jenkins (Verified)</div>
-                      <div className="text-[11px] text-slate-400 font-mono">sarah.j_agency@outlook.com</div>
-                    </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      LIVE OTP
-                    </span>
-                  </div>
-
-                  <div className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-white">Mark Taylor (Profile Built)</div>
-                      <div className="text-[11px] text-slate-400 font-mono">mark.t_growth@yahoo.com</div>
-                    </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                      BIO + AVATAR
-                    </span>
-                  </div>
+                  ))}
                 </div>
 
                 <p className="text-[11px] text-slate-500 mt-3 italic">
@@ -733,6 +802,131 @@ export const DashboardPreview: React.FC = () => {
         )}
 
       </div>
+
+      {/* Account Profile & 2FA Inspector Modal */}
+      <AccountInspectorModal
+        account={inspectedAccount}
+        onClose={() => setInspectedAccount(null)}
+      />
+
+      {/* Automation Engine Configuration Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in duration-200">
+          <div 
+            className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 text-slate-100 shadow-2xl relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 text-sky-400 flex items-center justify-center">
+                  <Sliders className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Engine Runtime Configuration</h3>
+                  <p className="text-xs text-slate-400">Tune multi-threading, proxy routing &amp; stealth thresholds.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Form controls */}
+            <div className="py-4 space-y-4 text-xs font-mono">
+              {/* Concurrent Threads Slider */}
+              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-300 font-bold">Concurrent Browser Threads</span>
+                  <span className="text-sky-400 font-black text-sm">{activeThreads} Windows</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="16"
+                  value={activeThreads}
+                  onChange={(e) => setActiveThreads(Number(e.target.value))}
+                  className="w-full accent-blue-500 cursor-pointer"
+                />
+                <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>1 (Light)</span>
+                  <span>4 (Default)</span>
+                  <span>8 (Pro)</span>
+                  <span>16 (Max)</span>
+                </div>
+              </div>
+
+              {/* Proxy Region Selector */}
+              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
+                <label className="block text-slate-300 font-bold mb-1.5">
+                  Proxy Routing Pool
+                </label>
+                <select
+                  value={proxyRegion}
+                  onChange={(e) => setProxyRegion(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-sky-500"
+                >
+                  <option value="US Residential (AT&T)">US Residential (AT&T / Verizon)</option>
+                  <option value="UK Mobile 4G (EE/Vodafone)">UK Mobile 4G (EE / Vodafone)</option>
+                  <option value="Germany Fiber (Telekom)">Germany Fiber (Telekom / Vodafone)</option>
+                  <option value="Canada Residential (Rogers)">Canada Residential (Rogers / Bell)</option>
+                  <option value="Vietnam ISP (Viettel)">Vietnam ISP (Viettel / FPT)</option>
+                  <option value="Global SOCKS5 Rotating">Global SOCKS5 Rotating Pool</option>
+                </select>
+              </div>
+
+              {/* Typing Velocity */}
+              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
+                <label className="block text-slate-300 font-bold mb-1.5">
+                  Keystroke &amp; Mouse Velocity
+                </label>
+                <select
+                  value={typingVelocity}
+                  onChange={(e) => setTypingVelocity(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-sky-500"
+                >
+                  <option value="Humanized (120-250ms)">Humanized Natural (120-250ms delay with micro-jitter)</option>
+                  <option value="Ultra-Stealth (250-450ms)">Ultra-Stealth Slow (250-450ms with hesitation curves)</option>
+                  <option value="Turbo (40-80ms)">Turbo Fast (40-80ms — recommended with clean residential IPs)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <span className="text-[11px] text-slate-500 font-mono">
+                Changes apply dynamically
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowSettingsModal(false)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSimulatedLogs((prev) => [
+                      ...prev,
+                      `[CONFIG] Applied: ${activeThreads} Threads | ${proxyRegion} | ${typingVelocity}`
+                    ]);
+                    setShowSettingsModal(false);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md"
+                >
+                  Apply &amp; Deploy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 };
